@@ -1,5 +1,5 @@
 ---
-title: "HarvardX Data Science Capstone Project - Movielens"
+title: "HarvardX - Movielens Project"
 author: "Toby Wong"
 date: "May 2021"
 output: pdf_document
@@ -16,7 +16,7 @@ options(scipen = 100)
 
 This report is part of the capstone project for Harvardx Data Science Professional Certificate.
 
-The objective of this project is to compare the performances of movie rating prediction from different machine learning algorithms and identify the best machine learning algorithm model which generates a residual mean squared error (RMSE) score below the target score of `r target<-0.86490
+The objective of this project is to compare the performance of movie rating prediction from different machine learning algorithms and identify the best machine learning algorithm model which generates a residual mean squared error (RMSE) score below the target score of `r target<-0.86490
 target`.
 
 ```{r}
@@ -56,7 +56,7 @@ This report contains the following sections:
 
 # 2. Movielens Data-set
 
-The machine learning algorithms in this project used 10M version of the Movielens data-set (https://grouplens.org/datasets/movielens/10m/) which contains the past rating of movies given by different users.  The following code is supplied by the course and it downloads the Movielens data-set and splitting it into the two data-sets below:
+The machine learning algorithms in this project used 10M version of the Movielens data-set (https://grouplens.org/datasets/movielens/10m/) which contains the past rating of movies given by different users.  The following code is supplied by the course and it downloads the Movielens data-set and splits it into the two data-sets below:
 
 1. "edx" data-set (90% of the original data-set)
 2. "validation" data-set (10% of the original data-set)
@@ -122,7 +122,7 @@ rm(dl, ratings, movies, test_index, temp, movielens, removed)
 
 # 3. Data Exploration
 
-Before  building the machine learning algorithm models, data exploration is carried out on "edx" data-set to understand the structure and the data it contained.  This will help to determine how the models will be built.
+Before building the machine learning models, data exploration is carried out on "edx" data-set to understand the structure and the data it contained.  This helps to determine how the models will be built.
 
 ```{r}
 # Summary of "edx" data-set
@@ -136,7 +136,7 @@ From the summary above, "edx" data-set is noted to be a `r class(edx)` and it co
 head(edx)
 ```
 
-The information above shown that "userID" and "timestamp" are in integer class, "movieID" and "rating" are in numeric class while "title" and "genres"  are in character class.  After observed the first few rows, it is found the data in "genres" column is combinations of genres and "timestamp" will need to be converted into a suitable format in order for it to be useful in the algorithms.  In addition, "title" column contains both the movie title as well as the year the movie was released/premiered.
+The information above shown that "userID" and "timestamp" are in integer class, "movieID" and "rating" are in numeric class while "title" and "genres"  are in character class.  After observed the first few rows, it is found the data in "genres" column is arranged in combinations of genres and "timestamp" will need to be converted into a suitable format in order for it to be useful in the algorithms.  In addition, "title" column contains both the movie title as well as the year the movie was released/premiered.
 
 ```{r}
 # Check the genres in "edx"
@@ -144,7 +144,7 @@ head(edx$genres)
 
 ```
 
-There are `r n_distinct(edx$movieId)` different movies and `r n_distinct(edx$userId)` different users in "edx".  There are in total `n_distinct(edx$genres)` different genres and the high number of different genres is due to there are more than one genre or combination of genres assigned to the each of the movies.
+There are `r n_distinct(edx$movieId)` different movies and `r n_distinct(edx$userId)` different users in "edx".  There are in total `n_distinct(edx$genres)` different genres and the high number of different genres is due to the genres are in combinations.
 
 ```{r}
 # Separate the genres in "edx"
@@ -167,7 +167,7 @@ edx %>% ggplot(aes(rating)) +
   ylab("Number of Rating")
 ```
 
-The plot above shown the distribution of the ratings and it is observed that the most of the rating given is 4 and in general half star ratings are less common than whole star ratings.
+The plot above shown the distribution of the ratings and it is observed that the most rating given is 4 and in general half star ratings are less common than whole star ratings.
 
 
 ```{r}
@@ -191,12 +191,12 @@ edx %>%
   ggtitle("Count of Rating per Movie")
 ```
 
-From the above histogram shown the number of movie against the number of rating and there is a wide range in how many times a movie is rated as a few of the movies rated more than 10000 times but around 125 movies rated only one time.
+The above histogram shown the number of movie against the number of rating and it shown there is a wide range in how many times a movie is rated as a few of the movies rated more than 10000 times but around 125 movies rated only one time.
 
 
 # 4. Training set and Test Set
 
-Before the modelling of the algorithms, the `edx` data-set is split into "training_set" and "test_set".  "training_set" is 90% of "edx" while "test_set" is 10% of "edx".  "training_set" will be used to build the models and then using "test_set" set to test and generate RMSE scores.
+Before the modelling of the algorithms, the "edx" data-set is split into "training_set" and "test_set".  "training_set" is 90% of "edx" while "test_set" is 10% of "edx".  "training_set" will be used to build the models and then using "test_set" to test and generate RMSE scores.
 
 After the models are developed and tested, "edx" and "validation" data-sets will be used to train and then validate the final model(s) to verify if it can successfully achieve a score less than the target RMSE.
 
@@ -218,13 +218,13 @@ rm(test_index)
 ```
 
 
-# 5. Models
-A series of machine learning models using linear regression were developed progressively by adding and accumulating the effects of the variables from the data-set.  After all the effects of the variables are included in the model, regularization will be applied to the final model to enhance the performance.  
+# 5. Model Analysis
+A series of machine learning models using linear regression are developed progressively by adding and accumulating the effects of the variables from the data-set.  After all the effects of the variables are included in the model, regularization is applied to the final model(s) to further enhance the performance.  The the models are then compared and anlysed by using their their RMSE scores to deduce the findings and identify the best performing model.  
 
 
 ## 5.1 Model 1 Average of All Ratings
 
-The first model is the simplest one and it calculated the average of the ratings while  disregarded all other variables.  The resulted RMSE for Model 1 is used as a benchmark for the other models.
+The first model is the simplest one and it calculates the average of the ratings and disregards all other variables.  The resulted RMSE for Model 1 is used as a baseline for the other models.
 
 ```{r}
 ##################################
@@ -294,7 +294,7 @@ rmse3 <- RMSE(test_set$rating, model3)
 
 ```
 
-The RMSE score for Model 3 is `r rmse3` and the model made good improvement over model 2. 
+The RMSE score for Model 3 is `r rmse3` and it made good improvement over Model 2. 
 
 
 ## 5.4 Model 4 Average with Movie, User and Genre Effects
@@ -363,12 +363,12 @@ model5 <- test_set %>%
 rmse5 <- RMSE(test_set$rating, model5)
 ```
 
-Model 5 achieved a RMSE score of `r rmse5` and the improvement of time effect is also proved to be insignificant.
+Model 5 achieved a RMSE score of `r rmse5` and the improvement by using time effect is also insignificant.
 
 
 ## 5.6 Model 6 Average with Movie, User, Genre, Time and Premiere Year Effects
 
-Further to the time when the movie was rated, the year the movie was released/premiered may also contributed to how it was rated.  Model 6 included the effect of the premiere year by averaging the rating according to the premiere year.
+Further to the time when the movie was rated, the year the movie was released/premiered may also contributed to the rating.  Model 6 includes the effect of the time when the movie was premiered by averaging the rating according to the premiere year.
 
 ```{r}
 ###########################################################################
@@ -402,12 +402,12 @@ rmse6 <- RMSE(test_set$rating, model6)
 
 ```
 
-The RMSE score generated by Model 6 is `r rmse6` and it shown movie premiere year also only had small effect on the prediction and the target RMSE score could not be met despite all the variables had included in the model.
+The RMSE score generated by Model 6 is `r rmse6` and it shown movie premiere year also only has small effect on the prediction and the target RMSE score is not met despite all the variables are included in the model.
 
 
 ## 5.7 Model 7 Regularized Movie, User, Genre, Time and Premiere Year Effects
 
-Data exploration shown some of the movies were rated very few times, and the same can also applied to user, genre, time and premiere year.  The accuracy of the prediction is affected by these small number of ratings and therefore the performance can be improved by penalizing the data with few ratings through regularization.  Model 7 computes the prediction using a penalty term in a regularized model.
+Data exploration shown some of the movies are rated very few times, and the same is also applied to user, genre, time and premiere year.  The accuracy of the prediction is affected by these small number of ratings and therefore the performance can be improved by penalizing the data with few ratings through regularization.  Model 7 computes the prediction using a penalty term in a regularized model.
 
 ```{r}
 ##########################################################################
@@ -528,7 +528,7 @@ Model 7 achieved a RMSE score of `r rmse7` and the score did not improve meaning
 
 
 ## 5.8 Model 8 Regularized Movie, User, Separated Genre, Time and Premiere Year Effects
-As observed during data exploration, the genres of the movies were combined in the data-set and this affected the accuracy of the prediction as it resulted in large number of different combinations rather than the smaller number of genres.  Model 8 built from the regularized  effects incorporated in Model 7 while separated the genres to improve the RMSE score. 
+As observed during data exploration, the genres of the movies are combined in the data-set and this affects the accuracy of the prediction as it results in large number of different combinations rather than the smaller number of individual genres.  Model 8 is built from the regularized effects incorporated in Model 7 while separated the genres to improve the RMSE score. 
 
 ```{r}
 ####################################################################################
@@ -652,14 +652,14 @@ rmse8 <- RMSE(test_set_s_g$rating, model8)
 
 ```
 
-The RMSE score for Model 8 is `r rmse8` and met the target RMSE score.  It proved movie genres once separated can improve the prediction quite significantly.
+The RMSE score for Model 8 is `r rmse8` and it met the target RMSE score.  It proves movie genres once separated can improve the prediction quite significantly.
 
 
 # 6. Results
 
 ## 6.1 Validation
 
-From of the models tested, Model 8 Regularized Movie, User, Separated Genre, Time and Premiere Year produced the best RMSE score of `r rmse8` which met the target RMSE score `r target`.   For the purpose of validation, The two regularized models -  Model 7 and Model 8 will be validated by using `edx` and `validation` data-sets.
+From the models tested, Model 8 Regularized Movie, User, Separated Genre, Time and Premiere Year produced the best RMSE score of `r rmse8` which meets the target RMSE score `r target`.   For the purpose of validation, The two regularized models -  Model 7 and Model 8 are validated by using `edx` and `validation` data-sets.
 
 
 ## 6.2 Validation 1-Regularized Movie, User, Genre, Time and premiere Year Effects
@@ -727,7 +727,7 @@ rmse_val1 <- RMSE(validation$rating, model_val1)
 
 ```
 
-The resulted RMSE score after validation using using "edx" and "validation" data-sets on Model 7 is `r rmse_val1`.  It is a better result and unexpectedly meeting the target RMSE. 
+The resulted RMSE score after validation using using "edx" and "validation" data-sets on Model 7 is `r rmse_val1`.  It is a better result and unexpectedly meeting the target RMSE.
 
 
 ## 6.3 Validation 2-Regularized Movie, User, Separated Genre, Time and premiere Year Effects
@@ -798,7 +798,7 @@ rmse_val2 <- RMSE(validation_s_g$rating, model_val2)
 
 ```
 
-Using the "edx" and "validation" data-sets, Model 8 achieved a RMSE score of `r rmse_val2` and it is the best score among all the models and it met the target RMSE as expected.
+Using the "edx" and "validation" data-sets, Model 8 achieved a RMSE score of `r rmse_val2` and it is the best score among all the models and it meets the target RMSE as expected.
 
 
 ## 6.4 Summary of Results
@@ -817,17 +817,26 @@ summary
 
 ```
 
-Both Model 7 and Model 8 successfully validated meeting the target RMSE.  The following observations were noted from the results:
+Both Model 7 and Model 8 successfully validated to meet the target RMSE.  The following observations were noted from the results:
 
-1. The time of review (timestamp) and the year when the movie was released/premiered had very little impact on the rating prediction accuracy.
-2. The genre (genres) in the original combined format also had very little impact on the prediction however once the genres were separated, the impact became quite significant.
-3. Movie (movieID), and user (userID) made significant impacts to the accuracy of prediction.
+1. The time of review (timestamp) and the year when the movie was released/premiered have very little impact on the rating prediction.
+2. The genres (genres) in the original combined format also has very little impact on the prediction but once the genres are separated, the impact becomes quite significant.
+3. Movie (movieID) and user (userID) makes significant impacts to the accuracy of prediction.
 4. The two validation models used "edx" and "validation" data-sets provides more accurate predictions and this may due to the larger sample size.
 
 
 # 7. Conclusion
 
-After testing the different machine learning models, Model 8 Regularized Movie, User, Separated Genre, Time and Premiere Year Effects model achieved the best RMSE score.  The final model is validated by using the "validation" data-set and the resulted a RMSE score of  `r rmse_val2`, successfully passed the target RMSE of `r target` and met the project objective.
+After testing the different machine learning models, Model 8 Regularized Movie, User, Separated Genre, Time and Premiere Year Effects model achieved the best RMSE score.  The final model is validated by using the "validation" data-set and the resulted a RMSE score of  `r rmse_val2`, successfully passed the target RMSE of `r target` and met the project objective.  It is also noted that Model 7 Regularized Movie, User, Genre, Time and Premiere Year Effects can also meet the target RMSE by using the "validation" data-set.
+
+
+## 7.1 Limitation and Future Work
+
+This project is limited by only using linear regression as the machine learning algorithm.  The other limitations are the size of the data-set and number of variables.  Building from the outcome of this project, the following enhancements can be implemented to improve the movie rating prediction and RMSE score:
+
++ Test other machine learning algorithms, such as Random Forest and Matrix Factorization, to seek for better algorithm for the movie rating prediction
++ Increase the size of the data-set used by using the full data-set rather than the 10M version of Movielens data-set as increase in data will increase the accuracy of the prediction.  This will also require more computer resrouces. 
++ Use additional variables, such as runtime, age rating and box office, to study if other variables have larger effect than the ones studied in the project.
 
 
 # 8. Reference
